@@ -28,7 +28,7 @@ class Question(models.Model):
 
 class Answer(models.Model):
     content = models.TextField()
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, related_name='answers', on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     update_at = models.DateTimeField(auto_now=True)
 
