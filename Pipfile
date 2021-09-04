@@ -8,6 +8,13 @@ django = "*"
 djangorestframework = "*"
 markdown = "*"
 django-filter = "*"
+python-dateutil = "*"
+mysqlclient = "*"
+python-decouple = "*"
+factory-boy = "*"
+faker = "*"
+pytz = "*"
+django-seed = "*"
 
 [dev-packages]
 
