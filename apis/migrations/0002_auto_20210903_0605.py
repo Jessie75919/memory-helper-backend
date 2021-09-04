@@ -7,13 +7,14 @@ def create_stages(apps, schema_editor):
     Stage = apps.get_model('apis', 'Stage')
     db_alias = schema_editor.connection.alias
     Stage.objects.using(db_alias).bulk_create([
-        Stage(level=1, time_amount=0, next_stage_id=2),
-        Stage(level=2, time_amount=1, next_stage_id=3),
-        Stage(level=3, time_amount=8, next_stage_id=4),
-        Stage(level=4, time_amount=24, next_stage_id=5),
-        Stage(level=5, time_amount=144, next_stage_id=6),
+        Stage(level=1, time_amount=0),
+        Stage(level=2, time_amount=1),
+        Stage(level=3, time_amount=8),
+        Stage(level=4, time_amount=24),
+        Stage(level=5, time_amount=144),
         Stage(level=6, time_amount=480),
     ])
+
 
 
 def trucate_stages(apps, schema_editor):
