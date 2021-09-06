@@ -10,7 +10,10 @@
     {% endblock %}
   </head>
   <body>
-    {% block body %} {% block content %} {% endblock %} {% endblock %}
+    {% block body %}
+      {% block content %} {% endblock %}
+      {% csrf_token %}
+    {% endblock %}
   </body>
 </html>
 
