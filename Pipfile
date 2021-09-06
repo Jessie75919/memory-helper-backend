@@ -15,6 +15,7 @@ factory-boy = "*"
 faker = "*"
 pytz = "*"
 django-seed = "*"
+djangorestframework-simplejwt = "*"
 
 [dev-packages]
 
