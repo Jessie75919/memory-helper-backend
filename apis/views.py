@@ -7,9 +7,11 @@ from .models import Question, Answer, Stage
 from .serializers import QuestionSerializer, AnswerSerializer
 from rest_framework.views import APIView
 from .repos import QuestionRepo
+from rest_framework import permissions
 
 
 class QuestionList(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     """
     List all questions, or create a new Question
     """
@@ -36,6 +38,8 @@ def get_object(pk, cls):
 
 
 class QuestionAnswerUpdated(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+
     def put(self, req, pk):
         if req.data['choice'] not in ['blurry', 'easy', 'hard']:
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -46,6 +50,7 @@ class QuestionAnswerUpdated(APIView):
 
 
 class QuestionDetail(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     """get, update, delete specific question"""
 
     def put(self, req, pk):
@@ -68,6 +73,7 @@ class QuestionDetail(APIView):
 
 
 class AnswerDetail(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     """get, update answer"""
 
     def get(self, req, pk):
