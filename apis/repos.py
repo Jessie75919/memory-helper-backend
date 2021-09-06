@@ -36,6 +36,11 @@ class QuestionRepo:
     @staticmethod
     def answer_question(question, choice):
         if choice == 'blurry':
+            now = datetime.now()
+            question.last_seen_at = now
+            question.next_show_at = now + timedelta(hours=3)
+            question.count_of_seen = question.count_of_seen + 1
+            question.save()
             return question
 
         current_level = question.stage.level
