@@ -5,15 +5,19 @@ from dateutil.relativedelta import relativedelta
 
 class QuestionRepo:
     @staticmethod
-    def search(mode, now):
+    def search(mode, now, user):
         if mode is None:
-            return Question.objects.all()
+            return Question.objects.filter(user=user)
 
         end = datetime.combine(now, time.max)
         if mode == 'today':
             begin = datetime.combine(now, time.min)
             print(begin, end)
-            return Question.objects.filter(completed_at__isnull=True, next_show_at__range=(begin, end))
+            return Question.objects.filter(
+                user=user,
+                completed_at__isnull=True,
+                next_show_at__range=(begin, end)
+            )
 
         begin = None
         if mode == 'week':
@@ -23,7 +27,11 @@ class QuestionRepo:
             begin = now - relativedelta(months=1)
 
         begin = datetime.combine(begin, time.min)
-        return Question.objects.filter(completed_at__isnull=True, next_show_at__range=(begin, end))
+        return Question.objects.filter(
+            user=user,
+            completed_at__isnull=True,
+            next_show_at__range=(begin, end)
+        )
 
     @staticmethod
     def answer_question(question, choice):

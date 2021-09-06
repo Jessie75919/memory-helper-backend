@@ -16,14 +16,14 @@ class QuestionList(APIView):
 
     def get(self, req, format=None):
         param = req.GET.get('q', None)
-        questions = QuestionRepo.search(mode=param, now=datetime.now())
+        questions = QuestionRepo.search(mode=param, now=datetime.now(), user=req.user)
         serializer = QuestionSerializer(questions.order_by('-created_at'), many=True)
         return Response(serializer.data)
 
     def post(self, req, format=None):
         serializer = QuestionSerializer(data=req.data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(user=req.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
