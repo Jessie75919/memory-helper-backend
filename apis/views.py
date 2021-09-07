@@ -44,9 +44,9 @@ class QuestionAnswerUpdated(APIView):
         if req.data['choice'] not in ['blurry', 'easy', 'hard']:
             return Response(status=status.HTTP_400_BAD_REQUEST)
         question = Question.objects.select_related('stage').get(pk=pk)
-        QuestionRepo.answer_question(question, req.data['choice'])
-
-        return Response(status=status.HTTP_200_OK)
+        answered_question = QuestionRepo.answer_question(question=question, choice=req.data['choice'])
+        serializer = QuestionSerializer(answered_question)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class QuestionDetail(APIView):

@@ -1,6 +1,25 @@
-from .models import Question, Stage
+from .models import Question, Stage, MAX_STAGE_LEVEL
 from datetime import datetime, timedelta, time
 from dateutil.relativedelta import relativedelta
+
+
+def save_question(question, time_amount, stage=None):
+    if stage is not None:
+        question.stage = stage
+
+    now = datetime.now()
+    question.last_seen_at = now
+    question.next_show_at = now + time_amount
+    question.count_of_seen = question.count_of_seen + 1
+    question.save()
+    return question
+
+
+def mark_question_completed(question):
+    question.completed_at = datetime.now()
+    question.count_of_seen = question.count_of_seen + 1
+    question.save()
+    return question
 
 
 class QuestionRepo:
@@ -35,27 +54,21 @@ class QuestionRepo:
 
     @staticmethod
     def answer_question(question, choice):
+        """ if word is marked as 'blurry', it should show next day """
         if choice == 'blurry':
-            now = datetime.now()
-            question.last_seen_at = now
-            question.next_show_at = now + timedelta(hours=3)
-            question.count_of_seen = question.count_of_seen + 1
-            question.save()
-            return question
+            return save_question(question=question, time_amount=timedelta(days=1))
 
         current_level = question.stage.level
-        _stage = None
         next_level = None
 
         if choice == 'easy':
-            next_level = min(current_level + 1, 6)
+            if current_level == MAX_STAGE_LEVEL:
+                return mark_question_completed(question=question)
+            else:
+                next_level = min(current_level + 1, 6)
         elif choice == 'hard':
             next_level = max(current_level - 1, 1)
 
         _stage = Stage.objects.filter(level=next_level)[0]
-        question.stage = _stage
-        now = datetime.now()
-        question.last_seen_at = now
-        question.next_show_at = now + timedelta(hours=_stage.time_amount)
-        question.count_of_seen = question.count_of_seen + 1
-        question.save()
+
+        return save_question(question=question, stage=_stage, time_amount=timedelta(hours=_stage.time_amount))
