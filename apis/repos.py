@@ -22,35 +22,34 @@ def mark_question_completed(question):
     return question
 
 
+def query_question(user, begin, end):
+    return Question.objects.filter(
+        user=user,
+        completed_at__isnull=True,
+        next_show_at__range=(begin, end)
+    ).prefetch_related('answers')
+
+
 class QuestionRepo:
     @staticmethod
     def search(mode, now, user):
         if mode is None:
-            return Question.objects.filter(user=user)
-
-        end = datetime.combine(now, time.max)
-        if mode == 'today':
-            begin = datetime.combine(now, time.min)
-            print(begin, end)
-            return Question.objects.filter(
-                user=user,
-                completed_at__isnull=True,
-                next_show_at__range=(begin, end)
-            )
-
+            return Question.objects.filter(user=user) \
+                .prefetch_related('answers')
         begin = None
-        if mode == 'week':
-            begin = now - timedelta(days=7)
 
+        if mode == 'today':
+            begin = now
+        elif mode == 'week':
+            begin = now - timedelta(days=7)
         elif mode == 'month':
             begin = now - relativedelta(months=1)
 
+        end = datetime.combine(now, time.max)
         begin = datetime.combine(begin, time.min)
-        return Question.objects.filter(
-            user=user,
-            completed_at__isnull=True,
-            next_show_at__range=(begin, end)
-        )
+        print(begin, end)
+
+        return query_question(user, begin, end)
 
     @staticmethod
     def answer_question(question, choice):
