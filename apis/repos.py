@@ -3,7 +3,7 @@ from datetime import datetime, timedelta, time
 from dateutil.relativedelta import relativedelta
 
 
-def save_question(question, time_amount, stage=None):
+def update_question(question, time_amount, stage=None):
     if stage is not None:
         question.stage = stage
 
@@ -55,7 +55,7 @@ class QuestionRepo:
     def answer_question(question, choice):
         """ if word is marked as 'blurry', it should show next day """
         if choice == 'blurry':
-            return save_question(question=question, time_amount=timedelta(days=1))
+            return update_question(question=question, time_amount=timedelta(days=1))
 
         current_level = question.stage.level
         next_level = None
@@ -70,4 +70,4 @@ class QuestionRepo:
 
         _stage = Stage.objects.filter(level=next_level)[0]
 
-        return save_question(question=question, stage=_stage, time_amount=timedelta(hours=_stage.time_amount))
+        return update_question(question=question, stage=_stage, time_amount=timedelta(hours=_stage.time_amount))
