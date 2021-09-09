@@ -36,17 +36,17 @@ class QuestionRepo:
         if mode is None:
             return Question.objects.filter(user=user) \
                 .prefetch_related('answers')
-        begin = None
+        begin, end = None, None
 
         if mode == 'today':
-            begin = now
+            begin = datetime.combine(now, time.min)
+            end = now
         elif mode == 'week':
-            begin = now - timedelta(days=7)
+            begin = datetime.combine(now - timedelta(days=7), time.min)
+            end = datetime.combine(now, time.max)
         elif mode == 'month':
-            begin = now - relativedelta(months=1)
-
-        end = datetime.combine(now, time.max)
-        begin = datetime.combine(begin, time.min)
+            begin = datetime.combine(now - relativedelta(months=1), time.min)
+            end = datetime.combine(now, time.max)
 
         return query_question(user, begin, end)
 
