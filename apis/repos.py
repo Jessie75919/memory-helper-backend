@@ -47,7 +47,6 @@ class QuestionRepo:
 
         end = datetime.combine(now, time.max)
         begin = datetime.combine(begin, time.min)
-        print(begin, end)
 
         return query_question(user, begin, end)
 
