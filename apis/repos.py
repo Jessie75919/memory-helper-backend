@@ -31,9 +31,9 @@ def query_question(user, begin, end):
     ).prefetch_related('answers')
 
 
-def query_today_question(user, begin, now):
+def query_today_question(user, now):
     return Question.objects.filter(user=user, completed_at__isnull=True) \
-        .filter(Q(next_show_at__range=(begin, now)) | Q(next_show_at__lte=now)) \
+        .filter(next_show_at__lte=now) \
         .prefetch_related('answers')
 
 
@@ -47,9 +47,7 @@ class QuestionRepo:
         begin, end = None, None
 
         if mode == 'today':
-            begin = datetime.combine(now, time.min)
-            return query_today_question(user, begin, now)
-
+            return query_today_question(user, now)
         elif mode == 'week':
             begin = datetime.combine(now - timedelta(days=7), time.min)
             end = datetime.combine(now, time.max)
