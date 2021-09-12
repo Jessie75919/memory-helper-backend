@@ -1,3 +1,4 @@
+from django.db.models import Q
 from .models import Question, Stage, MAX_STAGE_LEVEL
 from datetime import datetime, timedelta, time
 from dateutil.relativedelta import relativedelta
@@ -30,17 +31,25 @@ def query_question(user, begin, end):
     ).prefetch_related('answers')
 
 
+def query_today_question(user, begin, now):
+    return Question.objects.filter(user=user, completed_at__isnull=True) \
+        .filter(Q(next_show_at__range=(begin, now)) | Q(next_show_at__lte=now)) \
+        .prefetch_related('answers')
+
+
 class QuestionRepo:
     @staticmethod
     def search(mode, now, user):
         if mode is None:
             return Question.objects.filter(user=user) \
                 .prefetch_related('answers')
+
         begin, end = None, None
 
         if mode == 'today':
             begin = datetime.combine(now, time.min)
-            end = now
+            return query_today_question(user, begin, now)
+
         elif mode == 'week':
             begin = datetime.combine(now - timedelta(days=7), time.min)
             end = datetime.combine(now, time.max)
